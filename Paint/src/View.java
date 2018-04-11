@@ -1,88 +1,56 @@
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.*;       // Using AWT's Graphics and Color
+import java.awt.event.*; // Using AWT event classes and listener interfaces
+import javax.swing.*;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class View extends JFrame {
 
-    // Globale Variabler
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGT = 700;
-    private static final int STATUSBAR_HEIGHT = 20;
-    private DrawCanvas canvas = new DrawCanvas();
 
-    // Meny
+    JPanel mainPanel = new JPanel();
     JMenuBar menuBar = new JMenuBar();
     JMenu menu = new JMenu("Fil");
-
-    // Knapper tilhørende
+    JButton drawLine = new JButton("Rett linje");
+    JPanel mousePanel = new JPanel();
+    JPanel statusPanel = new JPanel();
+    JLabel statusLabel = new JLabel("Status");
     JMenuItem aapne = new JMenuItem("Åpne");
     JMenuItem lagre = new JMenuItem("Lagre");
     JMenuItem lagreSom = new JMenuItem("Lagre som...");
 
-    // Knapper tilhørednde menybaren.
-    JButton tegne = new JButton("Tegn");
-
-    // Statuspanel (nederst)
-    JPanel statusPanel = new JPanel();
-    JLabel statusBar = new JLabel("Status");
-
-
     public View (Controller controller) {
 
-        super("Tittel");
-        this.setLayout(new BorderLayout());
-        this.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGT));
-
-        //Container cp = getContentPane();
-
-        this.add(canvas, BorderLayout.CENTER);
-        pack(); //??????
-
-        // statusBar
-        statusPanel.setBorder((new BevelBorder(BevelBorder.LOWERED)));
-        this.add(statusPanel, BorderLayout.SOUTH);
-        statusPanel.setPreferredSize(new Dimension(this.getWidth(), STATUSBAR_HEIGHT));
-        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
-        statusBar.setHorizontalAlignment(SwingConstants.LEFT);
-        statusPanel.add(statusBar);
-
-        // Add buttons to menubar
+        this.add(mainPanel);
         menu.add(aapne);
         menu.add(lagre);
         menu.add(lagreSom);
         menuBar.add(menu);
-        menuBar.add(tegne);
-        this.setJMenuBar(menuBar);
+        menuBar.add(drawLine);
+        this.add(menuBar);
 
-        // Add action to buttons
         aapne.addActionListener(controller);
         lagre.addActionListener(controller);
         lagreSom.addActionListener(controller);
+        drawLine.addActionListener(controller);
 
-        canvas.addMouseListener(controller);
-        canvas.addMouseMotionListener(controller);
-
+        this.setJMenuBar(menuBar);
+        this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setSize(CANVAS_WIDTH,CANVAS_HEIGT);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-    }
+        this.add(mousePanel, BorderLayout.CENTER);
 
-
-    // Panelet som alle tegningene gjøres opp på.
-    private class DrawCanvas extends JPanel {
-
-        DrawCanvas() {
-            this.setBackground(Color.white);
-        }
-
-
-        @Override
-        public void paintComponent (Graphics g) {
-            super.paintComponent(g);
-            g.setColor(Color.WHITE);
+        class Canvas extends JPanel {
 
         }
+
     }
 
 
