@@ -1,38 +1,38 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Graphics;
 import java.awt.event.*;
-import java.awt.image.ImageObserver;
 import java.io.IOException;
-import java.text.AttributedCharacterIterator;
 
-public class Controller implements WindowListener, ActionListener, MouseMotionListener, MouseListener {
+public class Controller implements WindowListener, ActionListener, MouseListener {
 
-    Model MyModel;
-    View MyView;
-    Graphics g;
-
-    Point pointStart = null;
-    Point pointEnd   = null;
+    BaseGraphics myGraphics;
+    Model myModel;
+    View myView;
     int endPointX;
     int endPointY;
-    int startPointX;
+   int startPointX;
     int startPointY;
     boolean shape = false;
+    int i = 0;
 
     public Controller() {
-        MyView = new View (this);
-        MyModel = new Model();
-        MyView.addWindowListener(this);
+        myView = new View (this);
+        myModel = new Model();
+        myView.addWindowListener(this);
+        myView.mousePanel.addMouseListener(this);
+        myGraphics = new BaseGraphics();
     }
 
-    // WindowListener
     @Override
     public void windowOpened(WindowEvent e) {
+        JOptionPane.showMessageDialog(null, "Velkommen til JavaOptionPaint!");
 
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
+
 
     }
 
@@ -61,57 +61,61 @@ public class Controller implements WindowListener, ActionListener, MouseMotionLi
 
     }
 
-    // ActionListener
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource().equals(MyView.tegne)) {
-            MyView.repaint(pointStart.x, pointStart.y, pointEnd.x, pointEnd.y);
-        }
-        else if(e.getSource().equals(MyView.aapne)) {
+
+        //If open button is pressed
+
+        if(e.getSource().equals(myView.aapne)) {
+            try {
+                myView.mousePanel.add(myModel.openFile());
+                myView.validate();
+            } catch (IOException e1) {
+                System.out.println("Feil i controller");
+            }
         }
 
         //If drawLine button is pressed, int shape = 1
-        else if(e.getSource().equals(MyView.drawLine)){
+        else if(e.getSource().equals(myView.drawLine)){
             this.shape = !this.shape;
         }
 
         //If save button is pressed
 
-        else if(e.getSource().equals(MyView.lagre)){
-
+        else if(e.getSource().equals(myView.lagre)){
+            myModel.saveFile(myView.mainPanel);
         }
 
     }
 
-    // MouseListener
     @Override
     public void mouseClicked(MouseEvent e) {
-       MyView.statusBar.setText("Mouse Clicked at X: " + e.getX() + ", Y :" + e.getY());
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        MyView.statusBar.setText("Mouse Pressed");
-        pointStart =  e.getPoint();
+
         //If shape is false, draw regular
         if(this.shape == false){
-            Graphics g = MyView.mousePanel.getGraphics();
+            Graphics g = myView.mousePanel.getGraphics();
             g.setColor(Color.black);
-            g.drawOval(e.getX(), e.getY(), 10, 10);
+            g.fillOval(e.getX(), e.getY(), 10, 10);
 
         }
-        startPointX = e.getX();
-        startPointY = e.getY();
+       startPointX = e.getX();
+       startPointY = e.getY();
+
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      MyView.statusBar.setText("Mouse Released");
+
         //Draw straight line
         if(this.shape == true) {
             endPointX = e.getX();
             endPointY = e.getY();
-            Graphics g = MyView.mousePanel.getGraphics();
+            Graphics g = myView.mousePanel.getGraphics();
             Graphics2D g2 = (Graphics2D) g;
             g2.setStroke(new BasicStroke(3));
             g.drawLine(startPointX, startPointY, endPointX, endPointY
@@ -123,42 +127,10 @@ public class Controller implements WindowListener, ActionListener, MouseMotionLi
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        MyView.statusBar.setText("Mouse Entered Canvas Area");
 
     }
-
     @Override
     public void mouseExited(MouseEvent e) {
-        MyView.statusBar.setText("Mouse Exited Canvas Area");
 
     }
-
-    // MouseMotionListener
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        pointEnd = e.getPoint();
-        MyModel.paint(g, pointStart, pointEnd);
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
-    }
-
-    /*
-
-    //MouseMotionListener
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        pointEnd = e.getPoint();
-       // g.drawLine(pointStart.x, pointStart.y, pointEnd.x, pointEnd.y);
-        myModel.paint(g, pointStart, pointEnd);
-        myView.repaint();
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        pointEnd = e.getPoint();
-    }
-    */
 }
